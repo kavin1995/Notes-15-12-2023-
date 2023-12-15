@@ -1,0 +1,35 @@
+
+pipeline {
+      agent any
+   
+    stages {
+	stage('Clean Workspace'){
+		steps{
+				deleteDir()
+			}
+		}
+        stage('Copy Project'){
+            steps{
+             bat  '''xcopy /s "C:\\Jenkins\\Packages\\Playwright_Guidewire" %WORKSPACE% /c /q /y /-y'''
+                    }
+        }
+        stage('Install dependencies') {
+            steps {
+                bat 'npm install'
+                bat 'npx playwright install'
+            }
+        }
+        stage('PolicyCenter') {
+            steps {
+               bat 'npx playwright test tests/PolicyCenter/'
+            }
+        }
+        }
+        post 
+	        {
+		always
+		{
+			junit allowEmptyResults: true, skipMarkingBuildUnstable: true, skipPublishingChecks: true, testResults: '**/results.xml'
+		}
+        	}
+       }

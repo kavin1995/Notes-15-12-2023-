@@ -1,0 +1,38 @@
+
+pipeline {
+    agent any
+    stages {
+              stage('Delete workspace'){
+          steps{           
+             deleteDir()
+          }
+      }
+        stage('Copy Project'){
+            steps{
+             bat  '''xcopy /s "C:\\Jenkins\\Packages\\Testcafe_guidewire" %WORKSPACE% /c /q /y /-y'''
+                    }
+        }
+        stage('Execution from workspace'){
+            steps{
+                echo WORKSPACE
+            }
+        }
+        
+             stage('Policy Center'){
+                  steps {
+                bat 'npm run test:Policycenter'
+            }
+        }
+             stage('Billing Center') {
+                steps {
+                bat 'npm run test:Billingcenter'
+            }
+        }
+              stage('Claim Center') {
+                steps {
+                bat 'npm run test:Claimcenter'
+            }
+        }
+       }
+           
+    }

@@ -1,0 +1,38 @@
+pipeline 
+{
+	agent any
+	stages 
+	{
+		stage('Clean Workspace')
+		{
+			steps{
+				deleteDir()
+			}
+		}
+		stage('Copy File') 
+		{
+			steps 
+			{
+				dir("C:/Jenkins/Packages/Delivery Package-Auto-Q BA NG Build v2.4.4/Client-Auto-Q BA NG Build v2.4.4") 
+				{
+					fileOperations([fileCopyOperation(excludes: '', flattenFiles: true, includes: 'feautoqba.jar,autoqba.jar,autoqba.ini,autoqba.html', targetLocation: "${WORKSPACE}")])
+				}
+			}			
+		}
+		stage('Execution') 
+		{
+			steps 
+			{
+				bat 'java -jar "%WORKSPACE%/feautoqba.jar" "Guidewire" "TestCases" "admin2" "%WORKSPACE%/" "Execution"'				
+			}
+		}
+		
+ 	}
+	post 
+	{
+		always
+		{
+			junit allowEmptyResults: true, skipMarkingBuildUnstable: true, skipPublishingChecks: true, testResults: '**/Guidewire.xml'
+		}
+	}
+}
